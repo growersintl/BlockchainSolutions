@@ -1,4 +1,5 @@
 pragma solidity ^0.4.19;
+import './NameRegistry.sol';
 
 
 contract ForeignToken {
@@ -8,11 +9,11 @@ contract ForeignToken {
 
 //contract by Adam Skrodzki
 contract GRWIBankAccount {
-    ForeignToken private token;
 	address private main;
 	address private _withdraw;
 	bool isLockedFlag;
 	uint256 lockedAmount ;
+	NameRegistry private registry;
 	
 	modifier onlyBank{
 	    if(msg.sender!=main){
@@ -32,14 +33,18 @@ contract GRWIBankAccount {
 	    }
 	}
 	
-	function GRWIBankAccount(address _token) public{
+    function getToken() public constant returns(ForeignToken){
+        return ForeignToken(registry.getAddress("GRWIToken"));
+    }
+	
+	function GRWIBankAccount(address _registry) public{
 	    main = msg.sender;
-	    token = ForeignToken(_token);
+	    registry = NameRegistry(_registry);
 	    
 	}
 	
 	function withdraw() public onlyBankOrWithdraw returns(bool){
-	  return(token.transfer(_withdraw,token.balanceOf(this)));
+	  return(getToken().transfer(_withdraw,getToken().balanceOf(this)));
 	}
 	
 	function setWithdrawAddress(address _adr) public onlyBank{
@@ -49,7 +54,7 @@ contract GRWIBankAccount {
 	function lock() public onlyBank{
 	    if(isLockedFlag==false){
 	        isLockedFlag = true;
-	        lockedAmount = token.balanceOf(this);
+	        lockedAmount = getToken().balanceOf(this);
 	    }
 	    else{
 	      revert();
@@ -67,7 +72,7 @@ contract GRWIBankAccount {
 	
 	function unlock(uint256 _lockedAmount) public onlyBank{
 	    if(isLockedFlag && lockedAmount == _lockedAmount){
-	        token.transfer(main,lockedAmount);
+	        getToken().transfer(main,lockedAmount);
 	        lockedAmount = 0;
 	        isLockedFlag = false;
 	    }

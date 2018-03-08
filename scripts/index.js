@@ -5,25 +5,6 @@ String.prototype.replaceAll = function(search, replacement) {
 
 var abi = [
 	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "holderId",
-				"type": "uint256"
-			}
-		],
-		"name": "GetAssignedAddress",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"constant": false,
 		"inputs": [
 			{
@@ -31,21 +12,7 @@ var abi = [
 				"type": "address"
 			}
 		],
-		"name": "ChangeOperatorAccount",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "addressId",
-				"type": "uint256"
-			}
-		],
-		"name": "Lock",
+		"name": "changeOperatorAccount",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -55,15 +22,15 @@ var abi = [
 		"constant": true,
 		"inputs": [
 			{
-				"name": "addressId",
+				"name": "holderId",
 				"type": "uint256"
 			}
 		],
-		"name": "GetAmount",
+		"name": "getAssignedAddress",
 		"outputs": [
 			{
 				"name": "",
-				"type": "uint256"
+				"type": "address"
 			}
 		],
 		"payable": false,
@@ -76,9 +43,13 @@ var abi = [
 			{
 				"name": "holderId",
 				"type": "uint256"
+			},
+			{
+				"name": "sendBackAddress",
+				"type": "address"
 			}
 		],
-		"name": "AssignAddress",
+		"name": "bindWithWithdrawAccount",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -96,7 +67,21 @@ var abi = [
 				"type": "uint256"
 			}
 		],
-		"name": "Unlock",
+		"name": "unlock",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "holderId",
+				"type": "uint256"
+			}
+		],
+		"name": "assignAddress",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -124,15 +109,29 @@ var abi = [
 				"type": "uint256"
 			}
 		],
-		"name": "IsLocked",
+		"name": "getAmount",
 		"outputs": [
 			{
 				"name": "",
-				"type": "bool"
+				"type": "uint256"
 			}
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "changeOwner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -153,14 +152,51 @@ var abi = [
 		"constant": false,
 		"inputs": [
 			{
-				"name": "newOwner",
-				"type": "address"
+				"name": "startHolderId",
+				"type": "uint256"
+			},
+			{
+				"name": "endHolderId",
+				"type": "uint256"
 			}
 		],
-		"name": "ChangeOwner",
+		"name": "assignMultipleAddresses",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "addressId",
+				"type": "uint256"
+			}
+		],
+		"name": "lock",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "addressId",
+				"type": "uint256"
+			}
+		],
+		"name": "isLocked",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
