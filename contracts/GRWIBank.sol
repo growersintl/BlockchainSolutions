@@ -76,6 +76,7 @@ contract GRWIBank {
             createNewAccount();
           }
           assignments[i] = availableAddresses[firstFreeAddressIndex];
+          firstFreeAddressIndex++;
         }
     }
     

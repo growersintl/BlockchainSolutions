@@ -23,9 +23,13 @@ module.exports = function(deployer) {
             }).then(function(){
                 console.log("setBank done");
             }).then(function(){
+                console.log("setBank done");
                 return bankCtrct.assignAddress(1);
             }).then(function(){
-                return bankCtrct.assignMultipleAddresses(2,11);
+                console.log("setBank done");
+                return bankCtrct.assignAddress(2);
+            }).then(function(){
+                return bankCtrct.assignMultipleAddresses(3,12);
             });
         });
     });
