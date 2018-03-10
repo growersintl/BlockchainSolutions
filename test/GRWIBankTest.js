@@ -30,7 +30,7 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
               await data.registry.setAddress("GRWIBank",data.bank.address);
               
           });
- /*                     
+                      
           describe('changeOwner', function () {
             it('should fail if called by not trusted', async function () {
                 var promise = data.bank.changeOwner(otherAddr2,{from:otherAddr1});
@@ -102,7 +102,7 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
                 return assert.isFalse(result===result2);
             });
           });
-       */ 
+        
           describe('lock', function () {
             beforeEach(async function () {
                await data.bank.assignAddress(2,{from:ownerAddr});
@@ -127,7 +127,7 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
             });
           });
           
-          
+      
           describe('bindWithWithdrawAccount', function () {
             beforeEach(async function () {
                await data.bank.assignAddress(2,{from:ownerAddr});
