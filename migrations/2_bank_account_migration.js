@@ -19,7 +19,7 @@ module.exports = function(deployer) {
             return  GRWIBank.deployed().then(function(bank){
                 bankCtrct = bank;
                 console.log("setBank");
-                return registry.setAddress("Bank",bank.address);
+                return registry.setAddress("GRWIBank",bank.address);
             }).then(function(){
                 console.log("setBank done");
             }).then(function(){

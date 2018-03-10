@@ -1,4 +1,3 @@
 **/node_modules/**
-build
-/build
+**/build/**
 secrets.js

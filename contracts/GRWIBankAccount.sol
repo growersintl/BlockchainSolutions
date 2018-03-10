@@ -9,14 +9,13 @@ contract ForeignToken {
 
 //contract by Adam Skrodzki
 contract GRWIBankAccount {
-	address private main;
 	address private _withdraw;
 	bool isLockedFlag;
 	uint256 lockedAmount ;
 	NameRegistry private registry;
 	
 	modifier onlyBank{
-	    if(msg.sender!=main){
+	    if(msg.sender!=address(getBank())){
 	        revert();
 	    }
 	    else{
@@ -25,7 +24,7 @@ contract GRWIBankAccount {
 	}
 	
 	modifier onlyBankOrWithdraw{
-	    if(msg.sender!=main && msg.sender!=_withdraw){
+	    if(msg.sender!=address(getBank()) && msg.sender!=_withdraw){
 	        revert();
 	    }
 	    else{
@@ -37,8 +36,11 @@ contract GRWIBankAccount {
         return ForeignToken(registry.getAddress("GRWIToken"));
     }
 	
+    function getBank() public constant returns(ForeignToken){
+        return ForeignToken(registry.getAddress("GRWIBank"));
+    }
+	
 	function GRWIBankAccount(address _registry) public{
-	    main = msg.sender;
 	    registry = NameRegistry(_registry);
 	    
 	}
@@ -72,13 +74,18 @@ contract GRWIBankAccount {
 	
 	function unlock(uint256 _lockedAmount) public onlyBank{
 	    if(isLockedFlag && lockedAmount == _lockedAmount){
-	        getToken().transfer(main,lockedAmount);
+	        getToken().transfer(getBank(),lockedAmount);
 	        lockedAmount = 0;
 	        isLockedFlag = false;
 	    }
 	    else{
 	        revert();
 	    }
+	}
+	
+	function () public onlyBank {
+	
+	
 	}
 	
 }
