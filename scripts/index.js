@@ -221,7 +221,7 @@ var bankContracAddress = "0xab6c0f81411ff8fe83c935bfa9f85d5633dd3c35"; //Main Co
 var mnemonic ="shed inner immense vacant donkey lumber example assist maze link field trend pattern photo project"
 //Mnemonic, need to be changed on production
 var gasPriceInWei = "10000000000"; //10 GWEI on production need to be adjustable 
-var PORT = 14520;//Port for server
+var PORT = 38520;//Port for server
 
 require('babel-register');
 require('babel-polyfill');
