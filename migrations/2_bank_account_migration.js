@@ -17,19 +17,15 @@ module.exports = function(deployer) {
     }).then(function(){
         return deployer.deploy(GRWIBank,registry.address).then(function(){
             return  GRWIBank.deployed().then(function(bank){
-                bankCtrct = bank;
-                console.log("setBank");
-                return registry.setAddress("GRWIBank",bank.address);
+                return bank.changeOperatorAccount("0x5b55c7ec3bd128e46f0820e1daa491aed896b8c5").then(function(){
+                    bankCtrct = bank;
+                    console.log("setBank");
+                    return registry.setAddress("GRWIBank",bank.address);
+                })
             }).then(function(){
-                console.log("setBank done");
-            }).then(function(){
-                console.log("setBank done");
-                return bankCtrct.assignAddress(1);
-            }).then(function(){
-                console.log("setBank done");
-                return bankCtrct.assignAddress(2);
-            }).then(function(){
-                return bankCtrct.assignMultipleAddresses(3,12);
+                return Promise.all([bankCtrct.operator(),bankCtrct.owner()]).then(function(){
+                     console.log("setBank done = "+JSON.stringify(arguments));
+                })
             });
         });
     });

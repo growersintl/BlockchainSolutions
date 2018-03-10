@@ -9,22 +9,23 @@ contract ForeignToken {
 
 //contract by Adam Skrodzki
 contract GRWIBankAccount {
+	
 	address private _withdraw;
 	bool public isLockedFlag;
 	uint256 public lockedAmount ;
 	NameRegistry public registry;
 	
 	modifier onlyBank{
-	    if(msg.sender!=address(getBank())){
+	    if(msg.sender!=getBank()){
 	        revert();
 	    }
 	    else{
 	        _;
-	    }
+	   }
 	}
 	
 	modifier onlyBankOrWithdraw{
-	    if(msg.sender!=address(getBank()) && msg.sender!=_withdraw){
+	    if(msg.sender!=getBank() && msg.sender!=_withdraw){
 	        revert();
 	    }
 	    else{
@@ -32,12 +33,12 @@ contract GRWIBankAccount {
 	    }
 	}
 	
-    function getToken() public constant returns(ForeignToken){
-        return ForeignToken(registry.getAddress("GRWIToken"));
+    function getToken() public constant returns(address){
+        return registry.getAddress("GRWIToken");
     }
 	
-    function getBank() public constant returns(ForeignToken){
-        return ForeignToken(registry.getAddress("GRWIBank"));
+    function getBank() public constant returns(address){
+        return registry.getAddress("GRWIBank");
     }
 	
 	function GRWIBankAccount(address _registry) public{
@@ -46,7 +47,7 @@ contract GRWIBankAccount {
 	}
 	
 	function withdraw() public onlyBankOrWithdraw returns(bool){
-	  require(getToken().transfer(_withdraw,getToken().balanceOf(this)));
+	  require(ForeignToken(getToken()).transfer(_withdraw,ForeignToken(getToken()).balanceOf(this)));
 	  return true;
 	}
 	
@@ -57,7 +58,7 @@ contract GRWIBankAccount {
 	function lock() public onlyBank{
 	    if(isLockedFlag==false){
 	        isLockedFlag = true;
-	        lockedAmount = getToken().balanceOf(this);
+	        lockedAmount = ForeignToken(getToken()).balanceOf(this);
 	    }
 	    else{
 	      revert();
@@ -75,7 +76,7 @@ contract GRWIBankAccount {
 	
 	function unlock(uint256 _lockedAmount) public onlyBank{
 	    if(isLockedFlag && lockedAmount == _lockedAmount){
-	        getToken().transfer(getBank(),lockedAmount);
+	        ForeignToken(getToken()).transfer(getBank(),lockedAmount);
 	        lockedAmount = 0;
 	        isLockedFlag = false;
 	    }
