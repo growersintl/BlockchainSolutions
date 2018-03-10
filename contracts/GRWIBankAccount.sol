@@ -10,9 +10,9 @@ contract ForeignToken {
 //contract by Adam Skrodzki
 contract GRWIBankAccount {
 	address private _withdraw;
-	bool isLockedFlag;
-	uint256 lockedAmount ;
-	NameRegistry private registry;
+	bool public isLockedFlag;
+	uint256 public lockedAmount ;
+	NameRegistry public registry;
 	
 	modifier onlyBank{
 	    if(msg.sender!=address(getBank())){
@@ -46,7 +46,8 @@ contract GRWIBankAccount {
 	}
 	
 	function withdraw() public onlyBankOrWithdraw returns(bool){
-	  return(getToken().transfer(_withdraw,getToken().balanceOf(this)));
+	  require(getToken().transfer(_withdraw,getToken().balanceOf(this)));
+	  return true;
 	}
 	
 	function setWithdrawAddress(address _adr) public onlyBank{
@@ -84,8 +85,7 @@ contract GRWIBankAccount {
 	}
 	
 	function () public onlyBank {
-	
-	
+        msg.sender.delegatecall(msg.data);
 	}
 	
 }
