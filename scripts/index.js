@@ -291,7 +291,7 @@ var abi = [
 //CONFIG
 
 var providerUrl = "https://rinkeby.infura.io/ht4yyh0j0UUoTa2p9nF2";
-var bankContracAddress = "0x7f9d9c66c663af9ae603c47f0e196690043018f6"; //Main Contract Address
+var bankContracAddress = "0x0cbf446b912b86f283d5fd0c9624eab6816916b0"; //Main Contract Address
 
 var mnemonic ="shed inner immense vacant donkey lumber example assist maze link field trend pattern photo project"
 //Mnemonic, need to be changed on production

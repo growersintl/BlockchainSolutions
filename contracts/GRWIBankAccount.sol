@@ -7,41 +7,16 @@ contract GRWIBankAccount {
 	using GRWIBankAccountLibrary for GRWIBankAccountLibrary.GRWIData;
 	
 	GRWIBankAccountLibrary.GRWIData public data;
+	address private libraryAddr;
 	
 	
-	
-	function GRWIBankAccount(address _registry) public{
+	function GRWIBankAccount(address _registry,address _lib) public{
 	    data.registry = NameRegistry(_registry);
-	    
+	    libraryAddr = _lib;
 	}
 	
-	function withdraw() public returns(bool){
-		return data.withdraw();
+	function () public  {
+        libraryAddr.delegatecall(msg.data);
 	}
 	
-	function lock() public{
-	    data.lock();
-	}
-	
-	function setWithdrawAddress(address _adr) public{
-	    data.setWithdrawAddress(_adr);
-	}
-	
-	function isLocked() public constant returns(bool){
-	    return data.isLockedFlag;
-	}
-	
-	function getAmount() public constant returns(uint256){
-	    return data.lockedAmount;
-	}
-	
-	
-	function unlock(uint256 _lockedAmount) public{
-		return data.unlock(_lockedAmount);
-	}
-	/*
-	function () public onlyBank {
-        msg.sender.delegatecall(msg.data);
-	}
-	*/
 }

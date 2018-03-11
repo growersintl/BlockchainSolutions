@@ -17,9 +17,11 @@ var HDWalletProvider = require("truffle-hdwallet-provider");
 
 
 var infuraRinkebyUrl = secretData.INFURA_RINKEBY_URL;
+var infuraRopstenUrl = secretData.INFURA_ROPSTEN_URL;
 var mnemonic = secretData.SECRET_MNEMONIC;
 var infuraMainUrl = secretData.INFURA_MAIN_URL;
 var provider = new HDWalletProvider(mnemonic, infuraRinkebyUrl);
+var providerRopsten = new HDWalletProvider(mnemonic, infuraRopstenUrl);
 var providerMain = new HDWalletProvider(mnemonic, infuraMainUrl);
 
 console.log("Public key = "+provider.address);
@@ -37,6 +39,12 @@ module.exports = {
       network_id: 4, // eslint-disable-line camelcase
       gasPrice: "50000000000",
       gas: 5000000,
+    },
+    ropsten: {
+      provider: providerRopsten,
+      network_id: 3, // eslint-disable-line camelcase
+      gasPrice: "50000000000",
+      gas: 4600000,
     },
     main: {
       provider: providerMain,

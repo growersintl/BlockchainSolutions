@@ -2,8 +2,17 @@ pragma solidity ^0.4.4;
 
 import './GRWIBankAccount.sol';
 
+contract GRWIBankAccountInterface is GRWIBankAccount{
+    
+	function unlock(uint256 _lockedAmount) public;
+	function setWithdrawAddress(address _adr) public;
+	function lock() public;
+	function withdraw() public;
+}
+
 contract GRWIBank {
 
+    address private libraryAddr ;
     address public owner ;
     address public operator ;
     NameRegistry public registry;
@@ -27,8 +36,12 @@ contract GRWIBank {
         return registry.getAddress("GRWIToken");
     }
 
+    function setLibrary(address addr) onlyTrusted(msg.sender) public{
+        libraryAddr = addr;
+    }   
+    
     function changeOperatorAccount(address addr) onlyTrusted(msg.sender) public{
-            operator = addr;
+        operator = addr;
     }    
     function changeOwner(address newOwner) onlyTrusted(msg.sender) public{
         owner = newOwner;
@@ -38,24 +51,28 @@ contract GRWIBank {
         owner = msg.sender;
     }	
     function createNewAccount() onlyTrusted(msg.sender) internal{
-        var a = new GRWIBankAccount(registry);
+        var a = new GRWIBankAccount(registry,libraryAddr);
         availableAddresses.push(a);
     }
     function lock(uint256 addressId) onlyTrusted(msg.sender) public {
-       GRWIBankAccount b = GRWIBankAccount(assignments[addressId]);
+       GRWIBankAccountInterface b = GRWIBankAccountInterface(assignments[addressId]);
        b.lock();
     }
     function unlock(uint256 addressId,uint256 _lockedAmount) onlyTrusted(msg.sender) public{
-        GRWIBankAccount b = GRWIBankAccount(assignments[addressId]);
+        GRWIBankAccountInterface b = GRWIBankAccountInterface(assignments[addressId]);
         b.unlock(_lockedAmount);
     }
     function getAmount(uint256 addressId) constant onlyTrusted(msg.sender) public returns(uint256){
         GRWIBankAccount b = GRWIBankAccount(assignments[addressId]);
-        return b.getAmount();
+        uint256 amount;
+        (,,amount,)= b.data();
+        return amount;
     }
     function isLocked(uint256 addressId) constant onlyTrusted(msg.sender) public returns(bool){
         GRWIBankAccount b = GRWIBankAccount(assignments[addressId]);
-        return b.isLocked();
+        bool isLocked;
+        (,isLocked,,)= b.data();
+        return isLocked;
     }
     
     function getAvailableAddressesCount() private constant onlyTrusted(msg.sender) returns(uint256){
@@ -74,11 +91,11 @@ contract GRWIBank {
     }
     
     function bindWithWithdrawAccount(uint256 holderId, address sendBackAddress) onlyTrusted(msg.sender) public{
-      (GRWIBankAccount(assignments[holderId])).setWithdrawAddress(sendBackAddress);
+      (GRWIBankAccountInterface(assignments[holderId])).setWithdrawAddress(sendBackAddress);
     }
     
     function withdraw(uint256 holderId, address sendBackAddress) onlyTrusted(msg.sender) public{
-      (GRWIBankAccount(assignments[holderId])).withdraw();
+      (GRWIBankAccountInterface(assignments[holderId])).withdraw();
     }
     
     function assignAddress(uint256 holderId) onlyTrusted(msg.sender) onlyNew(holderId) public{
