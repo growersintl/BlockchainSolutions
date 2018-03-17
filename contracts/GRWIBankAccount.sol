@@ -4,8 +4,6 @@ import './GRWIBankAccountLibrary.sol';
 
 contract GRWIBankAccount {
 	
-	using GRWIBankAccountLibrary for GRWIBankAccountLibrary.GRWIData;
-	
 	GRWIBankAccountLibrary.GRWIData public data;
 	address private libraryAddr;
 	

@@ -8,10 +8,11 @@ module.exports = function(deployer) {
     var nameRegistryAddress = "";
     var registry = undefined;
     var bankCtrct = undefined;
+    var libraryCtrct = undefined;
     deployer.deploy(GRWIBankAccountLibrary).then(function() {
         return GRWIBankAccountLibrary.deployed();
     }).then(function(lib){
-        
+        libraryCtrct = lib.address;
     }).then(
         function(){
             return deployer.deploy(NameRegistry).then(function(){
@@ -27,8 +28,11 @@ module.exports = function(deployer) {
                         return bank.changeOperatorAccount("0x5b55c7ec3bd128e46f0820e1daa491aed896b8c5").then(function(){
                             bankCtrct = bank;
                             console.log("setBank");
-                            return registry.setAddress("GRWIBank",bank.address);
-                        })
+                            return bank.setLibrary(libraryCtrct).then(function(){
+                                console.log("Bank has library assigned "+libraryCtrct);
+                                return registry.setAddress("GRWIBank",bank.address);
+                            });
+                        });
                     }).then(function(){
                         return Promise.all([bankCtrct.operator(),bankCtrct.owner()]).then(function(){
                              console.log("setBank done = "+JSON.stringify(arguments));

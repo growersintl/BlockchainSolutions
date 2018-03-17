@@ -2,6 +2,7 @@ import latestTime from 'zeppelin-solidity/test/helpers/latestTime';
 import { advanceBlock } from 'zeppelin-solidity/test/helpers/advanceToBlock';
 import { increaseTimeTo, duration } from 'zeppelin-solidity/test/helpers/increaseTime';
 const GRWIBank = artifacts.require('GRWIBank');
+const GRWIBankAccountLibrary = artifacts.require('GRWIBankAccountLibrary');
 const GRWIBankAccount = artifacts.require('GRWIBankAccount');
 const NameRegistry = artifacts.require('NameRegistry');
 const ForeignTokenMock = artifacts.require('ForeignTokenMock');
@@ -23,8 +24,10 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
           const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
           beforeEach(async function () {
               data.registry = await NameRegistry.new();
+              data.lib = await GRWIBankAccountLibrary.new();
               data.bank = await GRWIBank.new(data.registry.address);
               await data.bank.changeOperatorAccount(operatorAddr);
+              await data.bank.setLibrary(data.lib.address);
               data.token = await ForeignTokenMock.new();
               await data.registry.setAddress("GRWIToken",data.token.address);
               await data.registry.setAddress("GRWIBank",data.bank.address);
@@ -133,6 +136,8 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
             beforeEach(async function () {
                await data.bank.assignAddress(2,{from:ownerAddr});
                adr2 = await data.bank.getAssignedAddress(2,{from:ownerAddr});
+               
+
             });
             it('should fail if called by not owner', async function () {
                 var promise = data.bank.bindWithWithdrawAccount(2,otherAddr2,{from:otherAddr1});
@@ -151,8 +156,11 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
                 return await promise;
             });
             it('should update withdraw property', async function () {
+                
                 await data.bank.bindWithWithdrawAccount(2,otherAddr2,{from:operatorAddr});
                 var info = await GRWIBankAccount.at(adr2).data();
+                
+                    
                 assert.equal(info[0],otherAddr2,'withdraw address should be set to '+otherAddr2);
                 return true;
             });

@@ -6,7 +6,7 @@ contract ForeignToken {
     function transfer(address _to, uint256 _value) returns (bool);
 }
 
-library GRWIBankAccountLibrary {
+contract GRWIBankAccountLibrary {
 	struct GRWIData{
 		address  _withdraw;
 		bool  isLockedFlag;
@@ -14,8 +14,11 @@ library GRWIBankAccountLibrary {
 		NameRegistry  registry;
 	}
 	
-	modifier onlyBank(GRWIData storage data){
-	    if(msg.sender!=getBank(data)){
+	
+	GRWIBankAccountLibrary.GRWIData public data;
+	
+	modifier onlyBank(){
+	    if(msg.sender!=getBank()){
 	        revert();
 	    }
 	    else{
@@ -23,8 +26,8 @@ library GRWIBankAccountLibrary {
 	   }
 	}
 	
-	modifier onlyBankOrWithdraw(GRWIData storage data){
-	    if(msg.sender!=getBank(data) && msg.sender!=data._withdraw){
+	modifier onlyBankOrWithdraw(){
+	    if(msg.sender!=getBank() && msg.sender!=data._withdraw){
 	        revert();
 	    }
 	    else{
@@ -32,23 +35,23 @@ library GRWIBankAccountLibrary {
 	    }
 	}
 	
-	function lock(GRWIData storage data) public onlyBank(data){
+	function lock() public onlyBank(){
 	    if(data.isLockedFlag==false){
 	        data.isLockedFlag = true;
-	        data.lockedAmount = ForeignToken(getToken(data)).balanceOf(this);
+	        data.lockedAmount = ForeignToken(getToken()).balanceOf(this);
 	    }
 	    else{
 	      revert();
 	    }
 	}
 	
-	function setWithdrawAddress(GRWIData storage data,address _adr) public onlyBank(data){
+	function setWithdrawAddress(address _adr) public onlyBank() {
 	    data._withdraw = _adr;
 	}
 	
-	function unlock(GRWIData storage data,uint256 _lockedAmount) public onlyBank(data){
+	function unlock(uint256 _lockedAmount) public onlyBank() {
 	    if(data.isLockedFlag && data.lockedAmount == _lockedAmount){
-	        ForeignToken(getToken(data)).transfer(getBank(data),data.lockedAmount);
+	        ForeignToken(getToken()).transfer(getBank(),data.lockedAmount);
 	        data.lockedAmount = 0;
 	        data.isLockedFlag = false;
 	    }
@@ -57,16 +60,20 @@ library GRWIBankAccountLibrary {
 	    }
 	}
 	
-	function withdraw(GRWIData storage data) public onlyBankOrWithdraw(data) returns(bool){
-	  require(ForeignToken(getToken(data)).transfer(data._withdraw,ForeignToken(getToken(data)).balanceOf(this)));
+	function withdraw() public onlyBankOrWithdraw() returns(bool){
+	  require(ForeignToken(getToken()).transfer(data._withdraw,ForeignToken(getToken()).balanceOf(this)));
 	  return true;
 	 }
 	  
-    function getToken(GRWIData storage data) constant returns(address){
+    function getToken() constant returns(address){
         return data.registry.getAddress("GRWIToken");
     }
 	
-    function getBank(GRWIData storage data) constant returns(address){
+    function getBank() constant returns(address){
         return data.registry.getAddress("GRWIBank");
+    }
+    
+    function () public {
+    	revert();
     }
 }
