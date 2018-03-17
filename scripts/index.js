@@ -387,7 +387,6 @@ if (command == "server") {
         var addr = contract.getAmount(arg1,outpoutHandler);
     }else
     if (command == "isLocked") {
-      console.log("isLocked "+arg1);
         var addr = contract.isLocked(arg1, outpoutHandler);
     }else
     if (command == "operator") {
