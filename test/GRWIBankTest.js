@@ -129,8 +129,10 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
           
       
           describe('bindWithWithdrawAccount', function () {
+              var adr2 = undefined;
             beforeEach(async function () {
                await data.bank.assignAddress(2,{from:ownerAddr});
+               adr2 = await data.bank.getAssignedAddress(2,{from:ownerAddr});
             });
             it('should fail if called by not owner', async function () {
                 var promise = data.bank.bindWithWithdrawAccount(2,otherAddr2,{from:otherAddr1});
@@ -143,6 +145,16 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
             it('should pass if called by operator', async function () {
                 var promise = data.bank.bindWithWithdrawAccount(2,otherAddr2,{from:operatorAddr});
                 return await promise;
+            });
+            it('should pass if called by operator', async function () {
+                var promise = data.bank.bindWithWithdrawAccount(2,otherAddr2,{from:operatorAddr});
+                return await promise;
+            });
+            it('should update withdraw property', async function () {
+                await data.bank.bindWithWithdrawAccount(2,otherAddr2,{from:operatorAddr});
+                var info = await GRWIBankAccount.at(adr2).data();
+                assert.equal(info[0],otherAddr2,'withdraw address should be set to '+otherAddr2);
+                return true;
             });
           });
   });

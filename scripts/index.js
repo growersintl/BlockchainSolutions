@@ -335,14 +335,19 @@ function (err, val) {
 	       console.log(err);
 	    	console.log(JSON.stringify(process.argv));
 	    } else{
-	       console.log(val);
+	        if(val.toNumber!=undefined){
+	            console.log(val.toNumber());
+	        }
+	        else{
+	            console.log(val);
+	        }
 	    }
        process.exit();
     };
 var http = require('http');
 var exec = require('child_process').exec;
 if (command == "server") {
-    console.log("server on port " + PORT);
+    console.log("http://0.0.0.0:" + PORT);
     http.createServer(function (req, res) {
         var str = req.url.substr(1);
         str = "node index.js " + str.replaceAll("/", " ");

@@ -10,8 +10,8 @@ module.exports = function(deployer) {
     var bankCtrct = undefined;
     deployer.deploy(GRWIBankAccountLibrary).then(function() {
         return GRWIBankAccountLibrary.deployed();
-    }).then(function(){
-        deployer.link(GRWIBankAccountLibrary, GRWIBank);   
+    }).then(function(lib){
+        
     }).then(
         function(){
             return deployer.deploy(NameRegistry).then(function(){
