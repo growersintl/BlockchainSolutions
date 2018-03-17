@@ -291,7 +291,7 @@ var abi = [
 //CONFIG
 
 var providerUrl = "https://rinkeby.infura.io/ht4yyh0j0UUoTa2p9nF2";
-var bankContracAddress = "0x0cbf446b912b86f283d5fd0c9624eab6816916b0"; //Main Contract Address
+var bankContracAddress = "0x37c1c985c534e4555c5c6b999db05c0eac4435e7"; //Main Contract Address
 
 var mnemonic ="shed inner immense vacant donkey lumber example assist maze link field trend pattern photo project"
 //Mnemonic, need to be changed on production
@@ -369,29 +369,35 @@ if (command == "server") {
     }).listen(PORT);
     
 } else
+{
+  
+    var arg1 = process.argv[3];
+    var arg2 = process.argv[4];
+    
+    if(isNaN(parseInt(process.argv[3]))==false)
+      arg1 = parseInt(process.argv[3])+10;
+      
+    if(isNaN(parseInt(process.argv[4]))==false)
+      arg2 = parseInt(process.argv[4])+10;
+      
     if (command == "getAssignedAccount") {
-        var arg1 = parseInt(process.argv[3]);
         var addr = contract.getAssignedAddress(arg1, outpoutHandler);
     }else
     if (command == "getLockedAmount") {
-        var arg1 = parseInt(process.argv[3]);
         var addr = contract.getAmount(arg1,outpoutHandler);
     }else
     if (command == "isLocked") {
-        var arg1 = parseInt(process.argv[3]);
+      console.log("isLocked "+arg1);
         var addr = contract.isLocked(arg1, outpoutHandler);
     }else
     if (command == "operator") {
-        var arg1 = parseInt(process.argv[3]);
         var addr = contract.operator(outpoutHandler);
     }else
     if (command == "owner") {
-        var arg1 = parseInt(process.argv[3]);
         var addr = contract.owner(outpoutHandler);
     }
     else
         if (command == "assignAccount") {
-            var arg1 = process.argv[3];
             var addr = contract.assignAddress.sendTransaction(arg1, {
                 from: accountAddress,
                 gasPrice: gasPriceInWei
@@ -399,7 +405,6 @@ if (command == "server") {
         }
 		else
         if (command == "lock") {
-            var arg1 = process.argv[3];
             var addr = contract.lock.sendTransaction(arg1, {
                 from: accountAddress,
                 gasPrice: gasPriceInWei
@@ -407,28 +412,21 @@ if (command == "server") {
         }
         else
         if (command == "bindWithWithdrawAccount") {
-            var holderId = process.argv[3];
             var holderWithdrawAddress = process.argv[4];
-            var addr = contract.bindWithWithdrawAccount.sendTransaction(holderId,holderWithdrawAddress, {
+            var addr = contract.bindWithWithdrawAccount.sendTransaction(arg1,holderWithdrawAddress, {
                 from: accountAddress,
                 gasPrice: gasPriceInWei
             },outpoutHandler);
         }
         else
         if (command == "assignMultipleAddresses") {
-            var startIndex = process.argv[3];
-            var endIndex = process.argv[4];
-            var addr = contract.assignMultipleAddresses.sendTransaction(startIndex,endIndex, {
+            var addr = contract.assignMultipleAddresses.sendTransaction(arg1,arg2, {
                 from: accountAddress,
                 gasPrice: gasPriceInWei
             },outpoutHandler);
         }
         else
         if (command == "unlock") {
-            var arg1 =  process.argv[3];
-            var arg2 =  process.argv[4];
-            
-
             var addr = contract.unlock.sendTransaction(arg1, arg2, {
                 from: accountAddress,
                 gasPrice: gasPriceInWei
@@ -454,7 +452,6 @@ if (command == "server") {
                     process.exit();
                 });
             } else if (command == "getTxStatus") {
-                var arg1 = process.argv[3];
 				web3.eth.getTransaction(arg1,function(err,val){
 					if(err==null){
 					  if(val==null){
@@ -490,3 +487,4 @@ if (command == "server") {
                 console.log("invalid command : "+command);
                 process.exit();
             }
+}
