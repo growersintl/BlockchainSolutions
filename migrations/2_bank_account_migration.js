@@ -29,13 +29,11 @@ module.exports = function(deployer) {
                             bankCtrct = bank;
                             console.log("setBank");
                             return bank.setLibrary(libraryCtrct).then(function(){
-                                console.log("Bank has library assigned "+libraryCtrct);
                                 return registry.setAddress("GRWIBank",bank.address);
                             });
                         });
                     }).then(function(){
                         return Promise.all([bankCtrct.operator(),bankCtrct.owner()]).then(function(){
-                             console.log("setBank done = "+JSON.stringify(arguments));
                         })
                     });
                 });

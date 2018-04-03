@@ -377,8 +377,6 @@ if (command == "server") {
     if(isNaN(parseInt(process.argv[3]))==false)
       arg1 = parseInt(process.argv[3])+10;
       
-    if(isNaN(parseInt(process.argv[4]))==false)
-      arg2 = parseInt(process.argv[4])+10;
       
     if (command == "getAssignedAccount") {
         var addr = contract.getAssignedAddress(arg1, outpoutHandler);
@@ -438,7 +436,7 @@ if (command == "server") {
                     console.log("account address " +accountAddress);
                     console.log("<BR/>getAssignedAccount [id] - returns address for user with [id] or 0x0000000.... if no address found");
                     console.log("<BR/>assignAccount [id] - create new Address for user with id [id], asynchronous ");
-                    console.log("<BR/>assignMultipleAddresses [startIndex] [endIndex] - create new Addresses for users with id from [startIndex] to [endIndex], asynchronous ");
+                    console.log("<BR/>assignMultipleAddresses [startIndex] [counter] - create [counter] new Addresses for users with id from [startIndex] , asynchronous ");
                     console.log("<BR/>bindWithWithdrawAccount [id] [address] - assign [address] as an withdraw account for user [id], asynchronous ");
                     console.log("<BR/>withdraw [id] - withdraw back to the user all tokens of user [id], asynchronous ");
 					console.log("<BR/>getLockedAmount [id] reads amount locked on user [id] account, this value should be passed to unlock");

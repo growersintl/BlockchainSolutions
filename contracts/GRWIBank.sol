@@ -12,6 +12,9 @@ contract GRWIBankAccountInterface is GRWIBankAccount{
 
 contract GRWIBank {
 
+    event Lock(uint256 _id);
+    event Unlock(uint256 _id);
+
     address private libraryAddr ;
     address public owner ;
     address public operator ;
@@ -56,32 +59,34 @@ contract GRWIBank {
     }
     function lock(uint256 addressId) onlyTrusted(msg.sender) public {
        GRWIBankAccountInterface b = GRWIBankAccountInterface(assignments[addressId]);
+       Lock(addressId);
        b.lock();
     }
     function unlock(uint256 addressId,uint256 _lockedAmount) onlyTrusted(msg.sender) public{
         GRWIBankAccountInterface b = GRWIBankAccountInterface(assignments[addressId]);
         b.unlock(_lockedAmount);
+        Unlock(addressId);
     }
-    function getAmount(uint256 addressId) constant onlyTrusted(msg.sender) public returns(uint256){
+    function getAmount(uint256 addressId) constant public returns(uint256){
         GRWIBankAccount b = GRWIBankAccount(assignments[addressId]);
         uint256 amount;
         (,,amount,)= b.data();
         return amount;
     }
-    function isLocked(uint256 addressId) constant onlyTrusted(msg.sender) public returns(bool){
+    function isLocked(uint256 addressId) public constant  returns(bool){
         GRWIBankAccount b = GRWIBankAccount(assignments[addressId]);
-        bool isLocked;
-        (,isLocked,,)= b.data();
-        return isLocked;
+        bool _isL;
+        (,_isL,,)= b.data();
+        return _isL;
     }
     
-    function getAvailableAddressesCount() private constant onlyTrusted(msg.sender) returns(uint256){
+    function getAvailableAddressesCount() private constant  returns(uint256){
         return availableAddresses.length-firstFreeAddressIndex;
     }
     
-    function assignMultipleAddresses(uint256 startHolderId,uint256 endHolderId) onlyTrusted(msg.sender) public{
-        require(startHolderId<=endHolderId);
-        for(uint256 i = startHolderId; i<=endHolderId ; i++){
+    function assignMultipleAddresses(uint256 startHolderId,uint256 counter) onlyTrusted(msg.sender) public{
+        require(counter>0);
+        for(uint256 i = startHolderId; i<startHolderId+counter ; i++){
           if(getAvailableAddressesCount()==0){
             createNewAccount();
           }

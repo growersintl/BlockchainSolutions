@@ -15,6 +15,9 @@ contract GRWIBankAccountLibrary {
 	}
 	
 	
+    event Lock(bool _isLocked ,address adr);
+	
+	
 	GRWIBankAccountLibrary.GRWIData public data;
 	
 	modifier onlyBank(){
@@ -36,6 +39,7 @@ contract GRWIBankAccountLibrary {
 	}
 	
 	function lock() public onlyBank(){
+		Lock(data.isLockedFlag,address(this));
 	    if(data.isLockedFlag==false){
 	        data.isLockedFlag = true;
 	        data.lockedAmount = ForeignToken(getToken()).balanceOf(this);

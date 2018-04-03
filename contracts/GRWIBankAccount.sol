@@ -14,7 +14,9 @@ contract GRWIBankAccount {
 	}
 	
 	function () public  {
-        libraryAddr.delegatecall(msg.data);
+        if(libraryAddr.delegatecall(msg.data)==false){
+        	revert();
+        }
 	}
 	
 }

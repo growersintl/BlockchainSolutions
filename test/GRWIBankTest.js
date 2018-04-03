@@ -33,7 +33,7 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
               await data.registry.setAddress("GRWIBank",data.bank.address);
               
           });
-                      
+                    
           describe('changeOwner', function () {
             it('should fail if called by not trusted', async function () {
                 var promise = data.bank.changeOwner(otherAddr2,{from:otherAddr1});
@@ -162,6 +162,37 @@ const ForeignTokenMock = artifacts.require('ForeignTokenMock');
                 
                     
                 assert.equal(info[0],otherAddr2,'withdraw address should be set to '+otherAddr2);
+                return true;
+            });
+          });
+          
+         
+          describe('lock', function () {
+            var adr2 = undefined;
+            beforeEach(async function () {
+               await data.bank.assignAddress(2,{from:ownerAddr});
+               adr2 = await data.bank.getAssignedAddress(2,{from:ownerAddr});
+               
+            });
+            it('should be locked after lock', async function () {
+                await data.bank.lock(2,{from:operatorAddr});
+                var info = (await GRWIBankAccount.at(adr2).data())[1];
+                assert.equal(info,true,'should be locked');
+                return true;
+            });
+            it('bank shoould know it is locked after lock', async function () {
+                await data.bank.lock(2,{from:operatorAddr});
+                var info = await data.bank.isLocked(2);
+                assert.equal(info,true,'should be locked');
+                return true;
+            });
+            it('second lock in a row should fail', async function () {
+                var testAdr = await data.bank.getAssignedAddress(2,{from:ownerAddr});
+                await data.bank.lock(2,{from:operatorAddr});
+                var info = await data.bank.isLocked(2);
+                console.log(" lock status="+info+" test adr "+testAdr);
+                var p = data.bank.lock(2,{from:operatorAddr}); 
+                await assertRevert(p);
                 return true;
             });
           });
