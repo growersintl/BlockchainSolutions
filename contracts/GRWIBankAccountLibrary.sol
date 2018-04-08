@@ -1,10 +1,7 @@
 pragma solidity ^0.4.19;
 import './NameRegistry.sol';
+import './ForeignTokenI.sol';
 
-contract ForeignToken {
-    function balanceOf(address _owner) constant returns (uint256);
-    function transfer(address _to, uint256 _value) returns (bool);
-}
 
 contract GRWIBankAccountLibrary {
 	struct GRWIData{
@@ -42,7 +39,7 @@ contract GRWIBankAccountLibrary {
 		Lock(data.isLockedFlag,address(this));
 	    if(data.isLockedFlag==false){
 	        data.isLockedFlag = true;
-	        data.lockedAmount = ForeignToken(getToken()).balanceOf(this);
+	        data.lockedAmount = ForeignTokenI(getToken()).balanceOf(this);
 	    }
 	    else{
 	      revert();
@@ -55,7 +52,7 @@ contract GRWIBankAccountLibrary {
 	
 	function unlock(uint256 _lockedAmount) public onlyBank() {
 	    if(data.isLockedFlag && data.lockedAmount == _lockedAmount){
-	        ForeignToken(getToken()).transfer(getBank(),data.lockedAmount);
+	        ForeignTokenI(getToken()).transfer(getBank(),data.lockedAmount);
 	        data.lockedAmount = 0;
 	        data.isLockedFlag = false;
 	    }
@@ -65,7 +62,7 @@ contract GRWIBankAccountLibrary {
 	}
 	
 	function withdraw() public onlyBankOrWithdraw() returns(bool){
-	  require(ForeignToken(getToken()).transfer(data._withdraw,ForeignToken(getToken()).balanceOf(this)));
+	  require(ForeignTokenI(getToken()).transfer(data._withdraw,ForeignTokenI(getToken()).balanceOf(this)));
 	  return true;
 	 }
 	  

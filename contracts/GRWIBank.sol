@@ -2,7 +2,7 @@ pragma solidity ^0.4.4;
 
 import './GRWIBankAccount.sol';
 
-contract GRWIBankAccountInterface is GRWIBankAccount{
+contract GRWIBankAccountInterface {
     
 	function unlock(uint256 _lockedAmount) public;
 	function setWithdrawAddress(address _adr) public;
@@ -21,6 +21,7 @@ contract GRWIBank {
     NameRegistry public registry;
 	GRWIBankAccount[] private availableAddresses;
     mapping(uint256 => address) private assignments ;
+    mapping(address => bool) private occupiedAddress;
 	
 
     uint256 public firstFreeAddressIndex = 0;
@@ -56,6 +57,10 @@ contract GRWIBank {
     function createNewAccount() onlyTrusted(msg.sender) internal{
         var a = new GRWIBankAccount(registry,libraryAddr);
         availableAddresses.push(a);
+        occupiedAddress[address(a)] = true;
+    }
+    function isAddressOccupied(address _test) constant public returns(bool){
+        return occupiedAddress[_test];
     }
     function lock(uint256 addressId) onlyTrusted(msg.sender) public {
        GRWIBankAccountInterface b = GRWIBankAccountInterface(assignments[addressId]);
