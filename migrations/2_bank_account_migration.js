@@ -6,12 +6,16 @@ var GRWIBankAccountLibrary = artifacts.require("./GRWIBankAccountLibrary.sol");
 var NameRegistry = artifacts.require("./NameRegistry.sol");
 
 module.exports = function(deployer,network,accounts) {
-    var tokenAddress = "0xb34f8e95b775ed0e7cd82b841cc294eec210a04d";//will change
+    var tokenAddress = "0x9218e26a55eb4b99f5c58e2ecb89d4827aa0c3f8";//will change
     var operatorAddress = "0x5b55c7ec3bd128e46f0820e1daa491aed896b8c5";//will change
     var ownerAddress = accounts[0];//will change
     var registry = undefined;
     var bankCtrct = undefined;
     var libraryCtrct = undefined;
+	if(network === 'development'){
+		console.log('tests skipping deployment');
+		return;
+	}
     deployer.deploy(GRWIBankAccountLibrary).then(function() {
         return GRWIBankAccountLibrary.deployed();
     }).then(function(lib){
@@ -38,7 +42,7 @@ module.exports = function(deployer,network,accounts) {
                             console.log('GRWITokenSwaper deploying....');
                             return GRWITokenSwaper.deployed().then(function(swaper){
                                 console.log('GRWITokenSwaper deployed.');
-                                return swaper.init(ownerAddress).then(function(){
+                                return swaper.init(ownerAddress,tokenAddress).then(function(){
                                     console.log('GRWITokenSwaper init');
                                     console.log('GRWITokenSwaper funds transfering....');
                                     var tCntrct = ForeignTokenI.at(tokenAddress);

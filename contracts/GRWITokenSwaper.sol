@@ -24,12 +24,11 @@ contract GRWITokenSwaper  {
 		address beneficiary;
 		uint64 tokensAmount;//Amount of GRWI in millis (for example if You own 500 old grwi You should Claim 500000
 		uint16 claimTime; // single tick equals 65536 seconds ~ 18.2 hours we require 9 ticks confirmation time  ~ 7 days
-		uint8  claimStatus; // 0 - requested, 1-accepted, 2-rejected
+		uint8  claimStatus; // 1 - requested, 0-accepted, 2-rejected
 	}
 	
 	struct BeneficiaryInfo{
 		uint64 claimIndex;
-		uint64 totalTokenAmount;
 	}
 	
 	Claim[] public requests ;
@@ -40,13 +39,13 @@ contract GRWITokenSwaper  {
 		registry = NameRegistry(_nameReg);
 	}
 	
-	function init(address _owner) public{
+	function init(address _owner,address _tokenAdr) public{
 	
 		require(address(registry)!=address(0));
 		require(owner==address(0));
-	    token = ForeignTokenI(registry.getAddress("GRWIToken"));
+	    token = ForeignTokenI(_tokenAdr);
 	    decimals = uint8(token.DECIMALS());
-	    bank = GRWIBankI(registry.getAddress("GRWIBank"));
+	//    bank = GRWIBankI(registry.getAddress("GRWIBank"));
 	    owner = _owner;
 	}
 	
@@ -56,41 +55,47 @@ contract GRWITokenSwaper  {
 		require(userRequests[_beneficiaryAddress].claimIndex==0);
 		uint64 idx = userRequests[_beneficiaryAddress].claimIndex ;
 		requests.push(Claim(_beneficiaryAddress,tokenAmount,uint16(uint32(now)/2**16),0));
-		userRequests[_beneficiaryAddress].claimIndex = uint64(requests.length-1);
+		userRequests[_beneficiaryAddress].claimIndex = uint64(requests.length);
+	    requests[idx].claimStatus=1;
+	    requests[idx].claimTime=uint16(uint32(now)/(2**16));
 	    ClaimMade(idx,requests[idx].beneficiary,requests[idx].tokensAmount);
 	}
 	
 	function rejectClaim(address _sender,bool punish) public onlyOwner{
+	
 		uint64 idx = userRequests[_sender].claimIndex ;
 		require(idx>0);
-		require(requests[idx].claimStatus==0);
+		require(requests[idx-1].claimStatus==1);
 		userRequests[_sender].claimIndex=0;
-	    requests[idx].claimStatus=2;
+	    requests[idx-1].claimStatus=2;
+		
 	    if(punish){
-			RejectAndPunish(idx,requests[idx].beneficiary,requests[idx].tokensAmount);
+			RejectAndPunish(idx,requests[idx-1].beneficiary,requests[idx-1].tokensAmount);
+			owner.transfer(3 finney);
 	    }
 	    else{
-			RejectClaim(idx,requests[idx].beneficiary,requests[idx].tokensAmount);
-			msg.sender.transfer(3 finney);
+			RejectClaim(idx,requests[idx-1].beneficiary,requests[idx-1].tokensAmount);
+			_sender.transfer(3 finney);
 	    }
+		
 	}
 	
 	function executeClaim(address _beneficiaryAddress) public {
 		uint64 idx = userRequests[_beneficiaryAddress].claimIndex ;
 		require(canExecute(_beneficiaryAddress));
-		token.transfer(requests[idx].beneficiary,requests[idx].tokensAmount*uint256(10)**(decimals-3));
-	    requests[idx].claimStatus=1;
-		userRequests[msg.sender].claimIndex=0;
-	    ExecuteClaim(idx,requests[idx].beneficiary,requests[idx].tokensAmount);
-		msg.sender.transfer(3 finney);
+		token.transfer(requests[idx-1].beneficiary,requests[idx-1].tokensAmount*(uint256(10)**(decimals-3)));
+	    requests[idx-1].claimStatus=0;
+		userRequests[_beneficiaryAddress].claimIndex=0;
+	    ExecuteClaim(idx,requests[idx-1].beneficiary,requests[idx-1].tokensAmount);
+		_beneficiaryAddress.transfer(3 finney);
 	}
 	
 	function canExecute(address _beneficiaryAddress) public constant returns(bool){
 		bool result = true;
 		uint64 idx = userRequests[_beneficiaryAddress].claimIndex ;
 		result = result && (idx > 0);
-		result = result && (uint16(uint32(now)/2**16)-requests[idx].claimTime>9);
-		result = result && (requests[idx].claimStatus==0);
+		result = result && (uint16(uint32(now)/(2**16))-requests[idx-1].claimTime>9);
+		result = result && (requests[idx-1].claimStatus==1);
 		return result;
 	}
 	
